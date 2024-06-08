@@ -59,23 +59,24 @@ public class Vendita extends HttpServlet {
 		                    product.setImmagine(name);
 		                }
 		                else {
+		                	String sanitizedValue = sanitize(item.getString());
 		                	if (item.getFieldName().compareTo("nome") == 0) {
-		                		product.setNome(item.getString());
+		                		product.setNome(sanitizedValue);
 		                	}
 		                	else if (item.getFieldName().compareTo("prezzo") == 0) {
-		                		product.setPrezzo(Double.parseDouble(item.getString()));
+		                		product.setPrezzo(Double.parseDouble(sanitizedValue));
 		                	}
 		                	else if (item.getFieldName().compareTo("spedizione") == 0) {
-		                		product.setSpedizione(Double.parseDouble(item.getString()));
+		                		product.setSpedizione(Double.parseDouble(sanitizedValue));
 		                	}
 		                	else if (item.getFieldName().compareTo("tipologia") == 0) {
-		                		product.setTipologia(item.getString());
+		                		product.setTipologia(sanitizedValue);
 		                	}
 							else if (item.getFieldName().compareTo("tag") == 0) {
-								product.setTag(item.getString());
+								product.setTag(sanitizedValue);
 							}
 							else if (item.getFieldName().compareTo("descrizione") == 0) {
-		                		product.setDescrizione(item.getString());
+		                		product.setDescrizione(sanitizedValue);
 		                	}
 		                }
 		            }
@@ -113,4 +114,37 @@ public class Vendita extends HttpServlet {
 		doGet(request, response);
 	}
 
+	protected String sanitize(String input) {
+		if (input == null) {
+			return null;
+		}
+    
+		StringBuilder sanitized = new StringBuilder();
+		for (char c : input.toCharArray()) {
+			switch (c) {
+            	case '<':
+            		sanitized.append("&lt;");
+            		break;
+            	case '>':
+            		sanitized.append("&gt;");
+            		break;
+            	case '&':
+            		sanitized.append("&amp;");
+            		break;
+            	case '"':
+            		sanitized.append("&quot;");
+            		break;
+            	case '\'':
+            		sanitized.append("&#x27;");
+            		break;
+            	case '/':
+            		sanitized.append("&#x2F;");
+            		break;
+            	default:
+            		sanitized.append(c);
+            		break;
+			}
+		}
+		return sanitized.toString();
+		}
 }
